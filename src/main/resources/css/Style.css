@@ -1,0 +1,187 @@
+.root {
+    -fx-background-image: url("../pics/815-06CByc_enl.jpg");
+    -fx-background-repeat: repeat;
+    -fx-padding: 15 15 15 15;
+}
+
+#btn1 {
+    -fx-background-color: palevioletred;
+    /*-fx-background-image: url("../pics/cb145f35efcfde4806f08dde631cab04.jpeg");*/
+    /*-fx-background-size: stretch;*/
+    /*-fx-background-repeat: repeat;*/
+    -fx-background-radius: 20;
+    -fx-background-insets: 15;
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-font: 48 "Cooper Black";
+    -fx-padding: -10, -10, -10, -10;
+    -fx-text-fill: purple;
+    -fx-font-weigh: bold;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#textArea {
+    -fx-background-color: oldlace;;
+    -fx-background-radius: 25;
+    -fx-background-insets: 10;
+    -fx-text-fill: #aa154c;
+    -fx-font: 12 "Comic Sans MS";
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+.text-area .scroll-pane .scroll-bar {
+    -fx-background-color: rgba(255,255,255,0.5);
+}
+
+.text-area .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .content {
+    -fx-background-color: transparent;
+}
+
+#messageTextArea {
+    /*-fx-background-color: mintcream;*/
+    -fx-background-color: lightcyan;
+    -fx-background-radius: 25;
+    -fx-background-insets: 10;
+    -fx-text-fill: green;
+    -fx-font: 12 "Comic Sans MS";
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#btn2 {
+    -fx-background-color: palevioletred;
+    -fx-background-radius: 20;
+    -fx-background-insets: 15;
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-font: 12 "Cooper Black";
+    -fx-padding: -10, -10, -10, -10;
+    -fx-text-fill: purple;
+    -fx-font-weigh: bold;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#btn3 {
+    -fx-background-color: greenyellow;
+    -fx-background-radius: 20;
+    -fx-background-insets: 15;
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-font: 12 "Cooper Black";
+    -fx-padding: -10, -10, -10, -10;
+    -fx-text-fill: purple;
+    -fx-font-weigh: bold;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#loginfield {
+    -fx-background-color: lightcyan;
+    -fx-background-radius: 25;
+    -fx-background-insets: 10;
+    -fx-text-fill: green;
+    -fx-font: 12 "Comic Sans MS";
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#passwordfiled {
+    -fx-background-color: lightcyan;
+    -fx-background-radius: 25;
+    -fx-background-insets: 10;
+    -fx-text-fill: green;
+    -fx-font: 12 "Comic Sans MS";
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#regnick {
+    -fx-background-color: lightcyan;
+    -fx-background-radius: 25;
+    -fx-background-insets: 10;
+    -fx-text-fill: green;
+    -fx-font: 12 "Comic Sans MS";
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#reglogin, #regnick {
+    -fx-background-color: lightcyan;
+    -fx-background-radius: 25;
+    -fx-background-insets: 10;
+    -fx-text-fill: green;
+    -fx-font: 12 "Comic Sans MS";
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#regpwd1, #regpwd2 {
+    -fx-background-color: lightcyan;
+    -fx-background-radius: 25;
+    -fx-background-insets: 10;
+    -fx-text-fill: green;
+    -fx-font: 12 "Comic Sans MS";
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#regbtn {
+    -fx-background-color: greenyellow;
+    -fx-background-radius: 20;
+    -fx-background-insets: 15;
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-font: 12 "Cooper Black";
+    -fx-padding: -10, -10, -10, -10;
+    -fx-text-fill: purple;
+    -fx-font-weigh: bold;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
+
+#backbtn {
+    -fx-background-color: lightgrey;
+    -fx-background-radius: 20;
+    -fx-background-insets: 15;
+    -fx-border-color: purple;
+    -fx-border-radius: 20;
+    -fx-border-width: 5;
+    -fx-border-insets: 10;
+    -fx-font: 12 "Cooper Black";
+    -fx-padding: -10, -10, -10, -10;
+    -fx-text-fill: purple;
+    -fx-font-weigh: bold;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
+}
