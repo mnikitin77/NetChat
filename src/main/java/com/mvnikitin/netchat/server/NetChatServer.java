@@ -8,43 +8,78 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class NetChatServer {
 
-    private static final int THREADS_COUNT = 5;
+    private static final String DBDRIVER = "org.sqlite.JDBC";
+    private static final String CONNECT_STRING =
+            "jdbc:sqlite:target/classes/data/netchatusers";
+    private static final int PORT = 10050;
+
+    private static final Logger logger =
+            LogManager.getLogger(NetChatServer.class.getName());
 
     private Map<String, ClientSession> clientSessions;
+    private Queue<ClientSession> processingQueue;
     private ExecutorService executorService;
-
-    private static final Logger logger = LogManager.getLogger(NetChatServer.class.getName());
+    //private boolean isToStop;  // TODO
 
     public NetChatServer() {
         clientSessions = new ConcurrentHashMap<>();
-        executorService = Executors.newFixedThreadPool(THREADS_COUNT);
+        processingQueue = new ConcurrentLinkedQueue<>();
+        executorService = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors() + 1);
+        //isToStop = false; //TODO
     }
 
     public static void main(String[] args) {
-            new NetChatServer().run();
+            new NetChatServer().start();
     }
 
-    public void run() {
+    //TODO продумать, как реализовать stop();
+
+    public void start() {
         ServerSocket server = null;
         Socket socket = null;
 
         try {
-            DataService.connect("org.sqlite.JDBC",
-                    //"jdbc:sqlite:target\\classes\\data\\netchatusers");
-                    "jdbc:sqlite:target/classes/data/netchatusers");
+            DataService.connect(DBDRIVER, CONNECT_STRING);
 
-            server = new ServerSocket(10050);
+            server = new ServerSocket(PORT);
             logger.info("Сервер запущен!");
 
+            // Создаём поток-диспетчер для обработки клиентских сессий.
+            new Thread(() -> {
+                // TODO придумать, как останавливать сервер!!! isToStop
+                while(true) {
+                    ClientSession clientSession = processingQueue.poll();
+                    if (clientSession != null) {
+                        try {
+                            if (clientSession.hasNewData() > 0) {
+                                // Отправляем клиентскую сессию в пул потоков.
+                                executorService.execute(clientSession);
+                            } else {
+                                // Клиент ничего не прислал,
+                                // перемещаем сессию в хвост.
+                                processingQueue.offer(clientSession);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+            logger.info("Диспетчер клиентских сессий запущен.");
+
+            // Слушаем серверный сокети и создаём клиентскую сессию.
             while (true) {
                 socket = server.accept();
-                executorService.execute(new ClientSession(this, socket));
+                passClientSessionToProcessing(new ClientSession(this, socket));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -70,7 +105,11 @@ public class NetChatServer {
             executorService.shutdown();
             DataService.disconnect();
         }
-    };
+    }
+
+    public void passClientSessionToProcessing(ClientSession clientSession) {
+        processingQueue.add(clientSession);
+    }
 
     public void broadcastMessage(String message, String userFrom) {
         for (ClientSession c: clientSessions.values()) {

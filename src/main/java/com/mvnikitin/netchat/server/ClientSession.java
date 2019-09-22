@@ -17,6 +17,7 @@ public class ClientSession implements Runnable{
     private NetChatServer server;
 
     private String user;
+    private boolean isAuth;
 
     private BlackList blackList;
 
@@ -39,6 +40,7 @@ public class ClientSession implements Runnable{
 
             user = "";
             blackList = null;
+            isAuth = false;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,95 +49,62 @@ public class ClientSession implements Runnable{
 
     @Override
     public void run() {
+
         try {
-            // Цикл обработки начальных команд чата.
-            while (true) {
-                String firstMessage = in.readUTF();
-                String[] commandString =
-                        firstMessage.split(" ", 2);
-
-                boolean isAuthenticated = false;
-
-                switch (commandString[0]) {
-                    case "/auth":
-                        isAuthenticated =
-                                authenticate(firstMessage);
-                        break;
-                    case "/reg":
-                        register(firstMessage);
-                        break;
-                    default:
-                        logger.warn("Incorrect command.");
-                        sendMessage("Incorrect command.");
-                }
-
-                if(isAuthenticated) {
-                    blackList = new BlackList(user);
-                    break;
-                }
-            }
-
-            // Цикл обработки сообщений чата.
-            while (true) {
+            // Выполняем предварительные действия по аутентификации
+            // или регистрации, если клиент не аутентифицирован.
+            if (!isAuth) {
+                logon();
+            } else {
+                // Обработка сообщений чата.
                 String messageReceived = in.readUTF();
                 String[] commandString =
                         messageReceived.split(" ", 2);
 
-                boolean isLogedOff = false;
-
                 switch (commandString[0]) {
+                    // Разрываем соединение.
                     case "/end":
-                        isLogedOff = true;
-                        logger.info("User " + user + " disconnected.");
-                        out.writeUTF("/serverClosed");
+                        logoff();
                         break;
+                    // Отправляем персональное сообщение.
                     case "/w":
                         sendPrivateMessage(messageReceived);
                         break;
+                    // Отправляем в чёрный список указанного собеседника.
                     case "/block":
                         addToBlackList(messageReceived);
                         break;
+                    // Исключить собеседника из чёрного списка.
                     case "/unblock":
                         removeFromBlackList(messageReceived);
                         break;
+                    // Отправить сообщение в чёт на всех.
                     default:
                         server.broadcastMessage(user + ": " +
                                 messageReceived, user);
                 }
-
-                if(isLogedOff)
-                    break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | SQLException e) {
             logger.error(e.getMessage());
-        } catch (SQLException e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.error(e.getMessage());
-            }
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.error(e.getMessage());
-            }
-            try {
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.error(e.getMessage());
-            }
 
-            server.closeClientSession(ClientSession.this);
+            // Если сломались, разрываем соединение.
+            if(isAuth) {
+                logoff();
+            }
+        }
+
+        // Ставим клиентскую сессию в очередь обработки сообщений
+        // если клиент аутентифицирован.
+        if(isAuth) {
+            server.passClientSessionToProcessing(this);
         }
     }
 
+
+    public int hasNewData() throws IOException {
+        return socket.getInputStream().available();
+    }
 
     public void sendMessage(String message) {
         try {
@@ -143,6 +112,76 @@ public class ClientSession implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
             logger.error(e.getMessage());
+        }
+    }
+
+    private void logon()
+            throws IOException, SQLException {
+        // Цикл обработки начальных команд чата.
+        while (true) {
+            String firstMessage = in.readUTF();
+            String[] commandString =
+                    firstMessage.split(" ", 2);
+
+            switch (commandString[0]) {
+                case "/auth":
+                    isAuth = authenticate(firstMessage);
+                    break;
+                case "/reg":
+                    register(firstMessage);
+                    break;
+                default:
+                    logger.warn("Incorrect command.");
+                    sendMessage("Incorrect command.");
+            }
+
+            // Создаём и инициализируем чёрный список.
+            if(isAuth) {
+                blackList = new BlackList(user);
+                break;
+            }
+        }
+    }
+
+    private void logoff() {
+        // Снимаем признак "аутентифицирован".
+        isAuth = false;
+
+        try {
+            out.writeUTF("/serverClosed");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+
+        logger.info("User " + user + " disconnected.");
+
+        // Удаляем текущий объек из коллекции сервера.
+        server.closeClientSession(ClientSession.this);
+
+        try {
+            if (in != null) {
+                in.close();
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+        try {
+            if (out != null) {
+                out.close();
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+        try {
+            if (socket != null && socket.isConnected()) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
